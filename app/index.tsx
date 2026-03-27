@@ -23,42 +23,51 @@ export default function Index() {
 
 	const calcularINSS = (salarioBruto: number) => {
 		let impostoTotal = 0;
-		if (salarioBruto > 0) {
-			const valorFaixa1 = Math.min(salarioBruto, 1320);
-			impostoTotal += valorFaixa1 * 0.075;
-		}
+		const tetoINSS = 8157.41;
+		const valorBase = Math.min(salarioBruto, tetoINSS);
 
-		if (salarioBruto > 1320) {
-			const valorFaixa2 = Math.min(salarioBruto, 2571.29) - 1320;
-			impostoTotal += valorFaixa2 * 0.09;
-		}
+		if (valorBase > 0) {
+			const faixa1 = Math.min(valorBase, 1512.0);
+			impostoTotal += faixa1 * 0.075;
 
-		if (salarioBruto > 2571.29) {
-			const valorFaixa3 = Math.min(salarioBruto, 3856.94) - 2571.29;
-			impostoTotal += valorFaixa3 * 0.12;
-		}
+			if (valorBase > 1512.0) {
+				const faixa2 = Math.min(valorBase, 2793.88) - 1512.0;
+				impostoTotal += faixa2 * 0.09;
+			}
 
-		if (salarioBruto > 3856.94) {
-			const valorFaixa4 = Math.min(salarioBruto, 7507.49) - 3856.94;
-			impostoTotal += valorFaixa4 * 0.14;
+			if (valorBase > 2793.88) {
+				const faixa3 = Math.min(valorBase, 4190.83) - 2793.88;
+				impostoTotal += faixa3 * 0.12;
+			}
+
+			if (valorBase > 4190.83) {
+				const faixa4 = Math.min(valorBase, 8157.41) - 4190.83;
+				impostoTotal += faixa4 * 0.14;
+			}
 		}
 
 		return impostoTotal;
 	};
-	const calcularIRPF = (salarioBruto: number, valorINSS: number) => {
-		const baseIR = salarioBruto - valorINSS;
-		let irpf = 0;
 
-		if (baseIR <= 2112.0) {
-			irpf = 0;
-		} else if (baseIR <= 2826.65) {
-			irpf = baseIR * 0.075 - 158.4;
+	const calcularIRPF = (salarioBruto: number, valorINSS: number) => {
+		const baseCalculoReal = salarioBruto - valorINSS - outrasDeducoes;
+
+		const descontoPadrao = 604.8;
+		const baseCalculoSimplicada = salarioBruto - descontoPadrao;
+
+		const baseIR = Math.min(baseCalculoReal, baseCalculoSimplicada);
+
+		if (baseIR <= 2259.2) return 0;
+
+		let irpf = 0;
+		if (baseIR <= 2828.65) {
+			irpf = baseIR * 0.075 - 169.44;
 		} else if (baseIR <= 3751.05) {
-			irpf = baseIR * 0.15 - 370.4;
+			irpf = baseIR * 0.15 - 381.59;
 		} else if (baseIR <= 4664.68) {
-			irpf = baseIR * 0.225 - 651.73;
+			irpf = baseIR * 0.225 - 662.77;
 		} else {
-			irpf = baseIR * 0.275 - 884.96;
+			irpf = baseIR * 0.275 - 896.0;
 		}
 
 		return Math.max(0, irpf);
